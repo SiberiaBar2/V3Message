@@ -4,10 +4,15 @@ import { ContentContainer } from '@/components/ContentContainer'
 
 import { NButton, NInput, NCard, NSpace, NGradientText } from 'naive-ui'
 
+import { useBoolean, useRequest } from 'vue-custom-hook-karlfranz'
+import { list } from '../../json/index'
 export default defineComponent({
   setup(props, ctx) {
     const input = ref('123')
 
+    console.log('list', list)
+
+    const [value, { on, off, toggle }] = useBoolean()
     // console.log('input1', input.value)
 
     const infos = [
@@ -34,6 +39,10 @@ export default defineComponent({
     ]
 
     const rightTextInner = ref<string>('123')
+
+    const originContent = ref<any[]>(list)
+    const content = ref<any[]>(list)
+
     return () => (
       <ContentContainer
         v-slots={{
@@ -54,14 +63,24 @@ export default defineComponent({
                   }}
                 /> */}
 
+                {/* <div>当前{value.value ? 1 : 2}</div> */}
+                {/* <div onClick={() => toggle()}>改变值</div> */}
                 <div class={styles.leftContent}>
+                  <NButton quaternary type="tertiary">
+                    返回上一级
+                  </NButton>
                   <NSpace vertical>
-                    {infos.map((item) => {
+                    {content.value.map((item) => {
                       return (
                         <div
-                          key={item.label}
+                          key={item.level}
                           onClick={() => {
-                            rightTextInner.value = item.label + '--' + item.value
+                            if (item.children && item.children.length > 0) {
+                              content.value = item.children
+                            } else {
+                              rightTextInner.value = item.name
+                            }
+                            // rightTextInner.value = item.label + '--' + item.value
                           }}
                         >
                           <NCard
@@ -69,9 +88,11 @@ export default defineComponent({
                               // width: '100px',
                               cursor: 'pointer'
                             }}
-                            title={item.label}
+                            title={item.name}
                           >
-                            {item.value}
+                            {/* {'>'} */}
+                            {/* {item.name} */}
+                            {item.children && item.children.length > 0 ? <span>{'>'}</span> : null}
                           </NCard>
                         </div>
                       )

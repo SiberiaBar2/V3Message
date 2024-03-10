@@ -35,7 +35,7 @@ export const ContentContainer = defineComponent({
               ...this.contentStyle
             }}
           >
-            {(this.$slots.default ? this.$slots.default?.() : null) as any}
+            {this.$slots.default ? this.$slots.default?.() : null}
           </div>
         </div>
       </div>
