@@ -38,12 +38,13 @@ export default defineComponent({
       }
     ]
 
-    const rightTextInner = ref<string>('123')
+    const rightTextInner = ref<string>('--')
 
     const originContent = ref<any[]>(list)
     const content = ref<any[]>(list)
 
-    // const 
+    const nowText = ref('')
+    // const
     return () => (
       <ContentContainer
         v-slots={{
@@ -67,9 +68,12 @@ export default defineComponent({
                 {/* <div>当前{value.value ? 1 : 2}</div> */}
                 {/* <div onClick={() => toggle()}>改变值</div> */}
                 <div class={styles.leftContent}>
-                  <NButton quaternary type="tertiary">
+                  {/* <NButton quaternary type="tertiary">
                     返回上一级
-                  </NButton>
+                  </NButton> */}
+                  当前位置
+                  {nowText.value}-
+                  {rightTextInner.value}
                   <NSpace vertical>
                     {content.value.map((item) => {
                       return (
@@ -77,9 +81,16 @@ export default defineComponent({
                           key={item.level}
                           onClick={() => {
                             if (item.children && item.children.length > 0) {
+                              nowText.value += `-${item.name}`
+
                               content.value = item.children
                             } else {
                               rightTextInner.value = item.name
+
+                              // nowText.value = `-${item.name}`
+                              // console.log('asdasas', nowText.value.split('-'))
+
+                              // nowText.value.split('-').pop()
                             }
                             // rightTextInner.value = item.label + '--' + item.value
                           }}
