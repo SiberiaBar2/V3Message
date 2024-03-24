@@ -50,18 +50,18 @@ const thridChinese = [
     level: '3',
     name: '课件'
   },
-  {
-    level: '3',
-    name: '预习资料'
-  },
-  {
-    level: '3',
-    name: '单元卷'
-  },
-  {
-    level: '3',
-    name: '周月考'
-  },
+  // {
+  //   level: '3',
+  //   name: '预习资料'
+  // },
+  // {
+  //   level: '3',
+  //   name: '单元卷'
+  // },
+  // {
+  //   level: '3',
+  //   name: '周月考'
+  // },
   {
     level: '3',
     name: '本学期知识点'
@@ -126,8 +126,12 @@ const thridChinese = [
   },
   {
     level: '3',
-    name: '教辅'
+    name: '练习题'
   }
+  // {
+  //   level: '3',
+  //   name: '教辅'
+  // }
 ]
 
 export const list = [
