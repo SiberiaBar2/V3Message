@@ -37,25 +37,19 @@ export default defineComponent({
     const renderHeader = () => (
       <>
         <div class={styles.leftContent}>
-          <div
-            style={{
-              color: 'rgb(18, 107, 174)'
+          <NButton
+            quaternary
+            color="rgb(18, 107, 174)"
+            onClick={() => {
+              if (nowText.value.length > 1) nowText.value.pop()
+              if (origin.value.length > 1) origin.value.pop()
+              if (rightTextInner.value) rightTextInner.value = ''
+
+              content.value = origin.value[origin.value.length - 1] || origin.value
             }}
           >
-            <NButton
-              quaternary
-              color="rgb(18, 107, 174)"
-              onClick={() => {
-                if (nowText.value.length > 1) nowText.value.pop()
-                if (origin.value.length > 1) origin.value.pop()
-                if (rightTextInner.value) rightTextInner.value = ''
-
-                content.value = origin.value[origin.value.length - 1] || origin.value
-              }}
-            >
-              返回上一级
-            </NButton>
-          </div>
+            返回上一级
+          </NButton>
           {renderPosition()}
           {rightTextInner.value ? `-${rightTextInner.value}` : ''}
           <NSpace vertical>
