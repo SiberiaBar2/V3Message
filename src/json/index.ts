@@ -3,18 +3,18 @@ const thrid = [
     level: '3',
     name: '课件'
   },
-  {
-    level: '3',
-    name: '预习资料'
-  },
-  {
-    level: '3',
-    name: '单元卷'
-  },
-  {
-    level: '3',
-    name: '周月考'
-  },
+  // {
+  //   level: '3',
+  //   name: '预习资料'
+  // },
+  // {
+  //   level: '3',
+  //   name: '单元卷'
+  // },
+  // {
+  //   level: '3',
+  //   name: '周月考'
+  // },
   {
     level: '3',
     name: '本学期知识点'
@@ -37,8 +37,12 @@ const thrid = [
   },
   {
     level: '3',
-    name: '教辅'
-  }
+    name: '练习题'
+  },
+  // {
+  //   level: '3',
+  //   name: '教辅'
+  // }
 ]
 
 const thridChinese = [
@@ -62,56 +66,56 @@ const thridChinese = [
     level: '3',
     name: '本学期知识点'
   },
-  {
-    level: '3',
-    name: '分类提升'
-  },
-  {
-    level: '3',
-    name: '题型组合', 
-    children: [
-        {
-          level: '4',
-          name: '（音）字词专项'
-        },
-        {
-          level: '4',
-          name: '句法练习'
-        },
-        {
-          level: '4',
-          name: '课文内容填空'
-        },
-        {
-          level: '4',
-          name: '古诗与积累'
-        },
-        {
-          level: '4',
-          name: '写作与交际'
-        },
-        {
-          level: '4',
-          name: '课内阅读'
-        },
-        {
-          level: '4',
-          name: '课外阅读'
-        },
-        {
-          level: '4',
-          name: '整合提升'
-        },
-        {
-          level: '4',
-          name: '题本套卷'
-        },
-        {
-          level: '4',
-          name: '素质能力拓展'
-        },
-    ]
-  },
+  // {
+  //   level: '3',
+  //   name: '分类提升'
+  // },
+  // {
+  //   level: '3',
+  //   name: '题型组合', 
+  //   children: [
+  //       {
+  //         level: '4',
+  //         name: '（音）字词专项'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '句法练习'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '课文内容填空'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '古诗与积累'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '写作与交际'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '课内阅读'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '课外阅读'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '整合提升'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '题本套卷'
+  //       },
+  //       {
+  //         level: '4',
+  //         name: '素质能力拓展'
+  //       },
+  //   ]
+  // },
   {
     level: '3',
     name: '期中期末卷'
@@ -128,7 +132,7 @@ const thridChinese = [
 
 export const list = [
   {
-    level: '1',
+    level: 'y1',
     name: '语文',
     children: [
       {
@@ -194,7 +198,7 @@ export const list = [
     ]
   },
   {
-    level: '1',
+    level: 's1',
     name: '数学',
     children: [
       {

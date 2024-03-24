@@ -1,4 +1,8 @@
 import { defineComponent } from 'vue'
+import Vue from 'vue'
+import {NCard} from 'naive-ui'
+
+type p = Vue.ComponentPropsOptions<typeof NCard>
 
 export const ContentContainer = defineComponent({
   props: ['style', 'contentStyle'],
