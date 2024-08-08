@@ -1,8 +1,10 @@
-import { defineComponent, ref, onMounted } from 'vue'
-import { NButton, NCard, NSpace } from 'naive-ui'
+import { defineComponent, ref, onMounted, reactive, toRaw } from 'vue'
+import { NButton, NCard, NSpace, useMessage, NInput, NPopconfirm, useDialog } from 'naive-ui'
+import { useQuery } from '@karlfranz/vuehooks'
 
 import { ContentContainer } from '@/components/ContentContainer'
 import { list } from '../../json/index'
+import { client } from '@/http'
 
 import styles from './index.module.scss'
 
@@ -64,41 +66,68 @@ const addItem = {
 
 export default defineComponent({
   setup() {
-    onMounted(() => {
-      fetch('https://www.subjectservice.shop/api/tree')
-      // fetch('http://localhost:3004/api/tree')
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('data====>', data)
+    const message = useMessage()
 
-          return data
-        })
-        .catch(console.error)
+    const treeList = reactive<any[]>([])
+    const {
+      data,
+      loading,
+      run: getTreeData
+    } = useQuery(() => client('api/tree'), {
+      success(res) {
+        console.log('res===>', res)
+        treeList.length = 0
+        treeList.push(...res?.treeData)
+      }
     })
+    const { loading: clearLoading, run: clearTree } = useQuery(() => client('api/clear', 'POST'), {
+      manual: true,
+      success() {
+        message.success('清除成功！')
+        getTreeData()
+      }
+    })
+
+    const { run: addSubject, loading: addEditLoading } = useQuery(
+      (params) => {
+        console.log('params', params)
+
+        return client(
+          'api/upsert',
+          'POST',
+          // ...treeList,
+          // {
+          // name: addItemName.value,
+          // children: []
+          params
+          // }
+          // [addItem]
+        )
+      },
+      {
+        manual: true,
+        success() {
+          message.success('新增成功！')
+          getTreeData()
+          addItemName.value = ''
+        }
+      }
+    )
+
+    console.log('datadata', data.value)
+
     const rightTextInner = ref<string>('')
     const nowText = ref<string[]>(['->'])
 
-    const content = ref(list)
-    const origin = ref([list])
+    const content = ref(treeList)
+    const origin = ref([treeList])
 
-    const addSubject = () => {
-      // fetch('http://localhost:3004/api/upsert', {
-      // //   .catch(console.error)
-      fetch('https://www.subjectservice.shop/api/upsert', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json' // 设置请求头，告诉服务器你发送的是JSON格式的数据
-        },
-        body: JSON.stringify(addItem)
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('data====>', data)
+    console.log('vvv', content.value)
 
-          return data
-        })
-        .catch(console.error)
-    }
+    console.log('treeList', treeList)
+
+    console.log('clearLoading.value', clearLoading.value)
+
     const renderPosition = () =>
       nowText.value ? (
         <div
@@ -119,10 +148,34 @@ export default defineComponent({
       ) : (
         ''
       )
+
+    const addItemName = ref('')
+
+    const dialog = useDialog()
+    const confirmClear = () => {
+      dialog.warning({
+        title: '警告',
+        content: '确定清除全部，此操作不可恢复？',
+        positiveText: '确定',
+        negativeText: '取消',
+        onPositiveClick: () => {
+          clearTree()
+        },
+        onNegativeClick: () => {}
+      })
+    }
+
+    const editIndex = ref(-1)
+    const editName = ref('')
     const renderHeader = () => (
       <>
         <div class={styles.leftContent}>
-          <NButton type="success" onClick={addSubject}>新增一项</NButton>
+          <NButton type="success" onClick={addSubject}>
+            新增一项
+          </NButton>
+          <NButton type="warning" onClick={confirmClear}>
+            清除全部
+          </NButton>
           <NButton
             quaternary
             color="rgb(18, 107, 174)"
@@ -139,10 +192,36 @@ export default defineComponent({
           {renderPosition()}
           {rightTextInner.value ? `-${rightTextInner.value}` : ''}
           <NSpace vertical>
-            {content.value.map((item) => {
+            <NCard>
+              <NButton
+                onClick={() => {
+                  if (!addItemName.value) return
+                  addSubject([
+                    ...toRaw(treeList),
+                    {
+                      name: addItemName.value,
+                      children: []
+                    }
+                  ])
+                }}
+              >
+                新增
+              </NButton>
+              <NInput
+                style={{
+                  width: '200px',
+                  marginLeft: '10px'
+                }}
+                value={addItemName.value}
+                onInput={(v) => {
+                  addItemName.value = v
+                }}
+              ></NInput>
+            </NCard>
+            {content.value?.map((item, index) => {
               return (
                 <div
-                  key={item.level}
+                  key={item?.level}
                   onClick={() => {
                     if (item.children && item.children.length > 0) {
                       nowText.value = nowText.value.concat(`-${item.name}`)
@@ -177,8 +256,29 @@ export default defineComponent({
                           {item.name}
                         </span>
                       </div>
+                    ) : editIndex.value === index ? (
+                      <NInput
+                        style={{
+                          width: '260px'
+                        }}
+                        value={item.name}
+                        onInput={(v) => {
+                          treeList[index].name = v
+                        }}
+                        onBlur={() => {
+                          console.log('...treeList...treeList', toRaw(treeList))
+                          editIndex.value = -1
+                          addSubject(toRaw(treeList))
+                        }}
+                      ></NInput>
                     ) : (
-                      <div>{item.name}</div>
+                      <div
+                        onClick={() => {
+                          editIndex.value = index
+                        }}
+                      >
+                        {item.name}
+                      </div>
                     )}
                   </NCard>
                 </div>
@@ -191,6 +291,7 @@ export default defineComponent({
 
     return () => (
       <ContentContainer
+        loading={loading.value || clearLoading.value || addEditLoading.value}
         v-slots={{
           default: () => {
             return (

@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { NConfigProvider } from 'naive-ui'
-import { zhCN, dateZhCN } from 'naive-ui'
-
+import {
+  NConfigProvider,
+  NMessageProvider,
+  NLoadingBarProvider,
+  NdialogProvider,
+  zhCN,
+  dateZhCN
+} from 'naive-ui'
 </script>
 
 <template>
   <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
-    <div class="content">
-      <RouterView />
-    </div>
+    <n-dialog-provider>
+      <n-loading-bar-provider>
+        <n-message-provider>
+          <div class="content">
+            <RouterView />
+          </div>
+        </n-message-provider>
+      </n-loading-bar-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 

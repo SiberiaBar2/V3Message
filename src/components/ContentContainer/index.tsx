@@ -1,11 +1,11 @@
 import { defineComponent } from 'vue'
 import Vue from 'vue'
-import {NCard} from 'naive-ui'
+import { NCard, NSpin } from 'naive-ui'
 
 type P = Vue.ComponentPropsOptions<typeof NCard>
 
 export const ContentContainer = defineComponent({
-  props: ['style', 'contentStyle'],
+  props: ['style', 'contentStyle', 'loading'],
   name: 'ContentContainer',
   render() {
     console.log('this.$slots', this.$slots)
@@ -17,31 +17,38 @@ export const ContentContainer = defineComponent({
           height: '100%'
         }}
       >
-        <div
+        <NSpin
+          show={this?.loading}
           style={{
-            padding: '12px',
-            borderRadius: '12px',
-            // height: '9%',
-            height: 'calc(100% - 20px)',
-
-            // margin: '10px 0',
-            backgroundColor: 'rgb(240, 161, 168)',
-            overflow: 'hidden',
-            margin: '10px',
-            ...this.style
+            height: '100%'
           }}
         >
           <div
             style={{
-              overflowY: 'auto',
-              height: '100%',
-              padding: '0px 8px',
-              ...this.contentStyle
+              padding: '12px',
+              borderRadius: '12px',
+              // height: '9%',
+              height: 'calc(100vh - 20px)',
+
+              // margin: '10px 0',
+              backgroundColor: 'rgb(240, 161, 168)',
+              overflow: 'hidden',
+              margin: '10px',
+              ...this.style
             }}
           >
-            {this.$slots.default ? this.$slots.default?.() : null}
+            <div
+              style={{
+                overflowY: 'auto',
+                height: '100%',
+                padding: '0px 8px',
+                ...this.contentStyle
+              }}
+            >
+              {this.$slots.default ? this.$slots.default?.() : null}
+            </div>
           </div>
-        </div>
+        </NSpin>
       </div>
     )
   }
