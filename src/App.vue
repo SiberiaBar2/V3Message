@@ -4,7 +4,7 @@ import {
   NConfigProvider,
   NMessageProvider,
   NLoadingBarProvider,
-  NdialogProvider,
+  NDialogProvider,
   zhCN,
   dateZhCN
 } from 'naive-ui'
