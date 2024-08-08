@@ -1,4 +1,4 @@
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { NButton, NCard, NSpace } from 'naive-ui'
 
 import { ContentContainer } from '@/components/ContentContainer'
@@ -6,14 +6,99 @@ import { list } from '../../json/index'
 
 import styles from './index.module.scss'
 
+const addItem = {
+  name: 'Level 1 Node A',
+  children: [
+    {
+      name: 'Level 2 Node A',
+      children: [
+        {
+          name: 'Level 3 Node A',
+          children: [
+            {
+              name: 'Level 4 Node A',
+              children: [
+                {
+                  name: 'Level 5 Node A',
+                  children: []
+                },
+                {
+                  name: 'Level 5 Node B',
+                  children: []
+                }
+              ]
+            },
+            {
+              name: 'Level 4 Node B',
+              children: []
+            }
+          ]
+        },
+        {
+          name: 'Level 3 Node B',
+          children: []
+        }
+      ]
+    },
+    {
+      name: 'Level 2 Node B',
+      children: [
+        {
+          name: 'Level 3 Node C',
+          children: [
+            {
+              name: 'Level 4 Node C',
+              children: [
+                {
+                  name: 'Level 5 Node C',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
 export default defineComponent({
   setup() {
+    onMounted(() => {
+      fetch('https://www.subjectservice.shop/api/tree')
+      // fetch('http://localhost:3004/api/tree')
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('data====>', data)
+
+          return data
+        })
+        .catch(console.error)
+    })
     const rightTextInner = ref<string>('')
     const nowText = ref<string[]>(['->'])
 
     const content = ref(list)
     const origin = ref([list])
 
+    const addSubject = () => {
+      // fetch('http://localhost:3004/api/upsert', {
+      // //   .catch(console.error)
+      fetch('https://www.subjectservice.shop/api/upsert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json' // 设置请求头，告诉服务器你发送的是JSON格式的数据
+        },
+        body: JSON.stringify(addItem)
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('data====>', data)
+
+          return data
+        })
+        .catch(console.error)
+    }
     const renderPosition = () =>
       nowText.value ? (
         <div
@@ -37,6 +122,7 @@ export default defineComponent({
     const renderHeader = () => (
       <>
         <div class={styles.leftContent}>
+          <NButton type="success" onClick={addSubject}>新增一项</NButton>
           <NButton
             quaternary
             color="rgb(18, 107, 174)"
