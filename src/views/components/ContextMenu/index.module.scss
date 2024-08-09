@@ -1,0 +1,20 @@
+.context-menu {
+  width: 180px;
+  position: fixed;
+  border-radius: 8px;
+  background-color: aliceblue;
+
+  .context-menu-item {
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    padding: 0px 10px;
+
+    border-radius: 8px;
+
+    &:hover {
+      background-color: beige;
+      cursor: pointer;
+    }
+  }
+}

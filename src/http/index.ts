@@ -6,8 +6,6 @@ export const client = (url: string = '', method: string = 'GET', params?: unknow
       : `http://localhost:3004/${url}`
 
   console.log('requestUrl', requestUrl)
-
-
   console.log('paramsparamsparams', params);
   
   return fetch(requestUrl, {
@@ -20,7 +18,6 @@ export const client = (url: string = '', method: string = 'GET', params?: unknow
     .then((response) => response.json())
     .then((data) => {
       console.log('data====>', data)
-
       return data
     })
     .catch(console.error)
