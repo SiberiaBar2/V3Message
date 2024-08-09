@@ -1,5 +1,6 @@
 import { defineComponent, ref, toRaw } from 'vue'
 import { NButton, NCard, NSpace, NInput } from 'naive-ui'
+
 import ContextMenu from '../ContextMenu'
 
 export default defineComponent({
@@ -42,6 +43,8 @@ export default defineComponent({
                     children: []
                   }
                 ])
+
+                addItemName.value = ''
               }}
             >
               新增

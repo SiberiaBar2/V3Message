@@ -53,7 +53,6 @@ export default defineComponent({
         success() {
           message.success('新增成功！')
           getTreeData()
-          addItemName.value = ''
         }
       }
     )
@@ -91,7 +90,7 @@ export default defineComponent({
         ''
       )
 
-    const addItemName = ref('')
+    // const addItemName = ref('')
 
     const dialog = useDialog()
     const confirmClear = () => {

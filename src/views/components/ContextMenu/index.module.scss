@@ -2,18 +2,25 @@
   width: 180px;
   position: fixed;
   border-radius: 8px;
-  background-color: aliceblue;
+  background-color: #fff;
+  //   border: 1px solid;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+  border: 0.5px solid #ccc;
 
   .context-menu-item {
     height: 30px;
     line-height: 30px;
     font-size: 14px;
     padding: 0px 10px;
+    font-weight: 500;
 
     border-radius: 8px;
 
     &:hover {
-      background-color: beige;
+      background-color: rgb(249, 244, 237);
       cursor: pointer;
     }
   }
