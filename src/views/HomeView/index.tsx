@@ -15,11 +15,7 @@ export default defineComponent({
     const { path, copyList, upLevel, downLevel, insideData, parentId } = useTreeLevel()
 
     const treeList = reactive<any[]>([])
-    const {
-      data,
-      loading,
-      run: getTreeData
-    } = useQuery(() => client('api/tree'), {
+    const { loading, run: getTreeData } = useQuery(() => client('api/tree'), {
       success(res) {
         console.log('res===>', res)
         treeList.length = 0
@@ -97,7 +93,7 @@ export default defineComponent({
             </span>
           ) : null}
           {path?.map((e, i) => {
-            if (i === path.length - 1) return e 
+            if (i === path.length - 1) return e
             return e + '/'
           })}
         </div>

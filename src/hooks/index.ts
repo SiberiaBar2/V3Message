@@ -81,9 +81,12 @@ export const useTreeLevel = () => {
   }
 
   const insideData = (list: any[]) => {
+    originList.length = 0
+    copyList.length = 0
     originList.push(...list)
     copyList.push(...list)
   }
+
   return {
     upLevel,
     downLevel,

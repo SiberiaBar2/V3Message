@@ -62,7 +62,6 @@ export default defineComponent({
                 if (!addItemName.value) return
                 props?.addSubject({
                   child: [
-                    ...toRaw(props?.treeList),
                     {
                       name: addItemName.value,
                       children: []
