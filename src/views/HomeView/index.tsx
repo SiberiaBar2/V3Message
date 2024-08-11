@@ -1,8 +1,9 @@
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, ref, reactive, toRaw } from 'vue'
 import { NButton, useMessage, useDialog } from 'naive-ui'
 import { useQuery } from '@karlfranz/vuehooks'
 
 import { ContentContainer } from '@/components/ContentContainer'
+import { useTreeLevel } from '@/hooks'
 import Subjects from '../components/Subjects'
 import { client } from '@/http'
 
@@ -11,6 +12,7 @@ import styles from './index.module.scss'
 export default defineComponent({
   setup() {
     const message = useMessage()
+    const { path, copyList, upLevel, downLevel, insideData, parentId } = useTreeLevel()
 
     const treeList = reactive<any[]>([])
     const {
@@ -22,6 +24,7 @@ export default defineComponent({
         console.log('res===>', res)
         treeList.length = 0
         treeList.push(...res?.treeData)
+        insideData(res?.treeData)
       }
     })
     const { loading: clearLoading, run: clearTree } = useQuery(() => client('api/clear', 'POST'), {
@@ -37,13 +40,17 @@ export default defineComponent({
         console.log('params', params)
 
         return client(
-          'api/upsert',
+          'api/addChild',
           'POST',
           // ...treeList,
           // {
           // name: addItemName.value,
           // children: []
           params
+          // {
+          //   child: params,
+          //   parendId:
+          // }
           // }
           // [addItem]
         )
@@ -56,18 +63,21 @@ export default defineComponent({
         }
       }
     )
-
-    console.log('datadata', data.value)
+    const { run: editNode, loading: editLoading } = useQuery(
+      (params) => {
+        return client('api/editNode', 'POST', params)
+      },
+      {
+        manual: true,
+        success() {
+          message.success('编辑成功！')
+          getTreeData()
+        }
+      }
+    )
 
     const rightTextInner = ref<string>('')
-    const nowText = ref<string[]>(['->'])
-
-    const content = ref(treeList)
-    const origin = ref([treeList])
-
-    // console.log('vvv', content.value)
-    // console.log('treeList', treeList)
-    // console.log('clearLoading.value', clearLoading.value)
+    const nowText = ref<string[]>(['->首页'])
 
     const renderPosition = () =>
       nowText.value ? (
@@ -77,14 +87,19 @@ export default defineComponent({
             marginBottom: '5px'
           }}
         >
-          <span
-            style={{
-              fontSize: '14px'
-            }}
-          >
-            当前位置
-          </span>
-          {nowText.value}
+          {path?.length > 0 ? (
+            <span
+              style={{
+                fontSize: '14px'
+              }}
+            >
+              当前位置-
+            </span>
+          ) : null}
+          {path?.map((e, i) => {
+            if (i === path.length - 1) return e 
+            return e + '/'
+          })}
         </div>
       ) : (
         ''
@@ -105,31 +120,37 @@ export default defineComponent({
       })
     }
 
+    console.log('copyList', copyList)
+
     const changeTree = (v: string, index: number) => {
       treeList[index].name = v
     }
     const renderHeader = () => (
       <>
         <div class={styles.leftContent}>
-          <NButton type="warning" onClick={confirmClear}>
-            清除全部
-          </NButton>
           <NButton
             quaternary
             color="rgb(18, 107, 174)"
+            disabled={path.length === 0}
             onClick={() => {
-              if (nowText.value.length > 1) nowText.value.pop()
-              if (origin.value.length > 1) origin.value.pop()
-              if (rightTextInner.value) rightTextInner.value = ''
-
-              content.value = origin.value[origin.value.length - 1] || origin.value
+              upLevel()
             }}
           >
             返回上一级
           </NButton>
+          <NButton type="error" onClick={confirmClear}>
+            清除全部
+          </NButton>
           {renderPosition()}
           {rightTextInner.value ? `-${rightTextInner.value}` : ''}
-          <Subjects addSubject={addSubject} treeList={treeList} changeTree={changeTree} />
+          <Subjects
+            editNode={editNode}
+            addSubject={addSubject}
+            treeList={copyList}
+            changeTree={changeTree}
+            downLevel={downLevel}
+            parentId={parentId}
+          />
         </div>
       </>
     )

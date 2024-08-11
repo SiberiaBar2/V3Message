@@ -1,4 +1,4 @@
-import { defineComponent, ref, toRaw } from 'vue'
+import { defineComponent, ref, toRaw, onMounted, onUnmounted } from 'vue'
 import { NButton, NCard, NSpace, NInput } from 'naive-ui'
 
 import ContextMenu from '../ContextMenu'
@@ -10,6 +10,10 @@ export default defineComponent({
       type: Function,
       default: () => {}
     },
+    editNode: {
+      type: Function,
+      default: () => {}
+    },
     treeList: {
       type: Array,
       default: []
@@ -17,6 +21,14 @@ export default defineComponent({
     changeTree: {
       type: Function,
       default: () => {}
+    },
+    downLevel: {
+      type: Function,
+      default: () => {}
+    },
+    parentId: {
+      type: Object,
+      default: {}
     }
   },
   setup(props, ctx) {
@@ -26,23 +38,38 @@ export default defineComponent({
     const content = ref<any[]>(props?.treeList)
     const origin = ref([props?.treeList])
 
+    const removeEditIndex = () => (editIndex.value = -1)
+    onMounted(() => {
+      window.addEventListener('click', removeEditIndex)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('click', removeEditIndex)
+    })
+
     const rightTextInner = ref<string>('')
     const nowText = ref<string[]>(['->'])
 
     return () => {
       return (
         <NSpace vertical>
-          <NCard>
+          <NCard
+            style={{
+              margin: '5px 0px'
+            }}
+          >
             <NButton
               onClick={() => {
                 if (!addItemName.value) return
-                props?.addSubject([
-                  ...toRaw(props?.treeList),
-                  {
-                    name: addItemName.value,
-                    children: []
-                  }
-                ])
+                props?.addSubject({
+                  child: [
+                    ...toRaw(props?.treeList),
+                    {
+                      name: addItemName.value,
+                      children: []
+                    }
+                  ],
+                  parentId: props?.parentId.value
+                })
 
                 addItemName.value = ''
               }}
@@ -63,18 +90,14 @@ export default defineComponent({
           {content.value?.map((item, index) => {
             return (
               <div
-                key={item?.level}
+                key={item?.id}
                 onClick={() => {
-                  if (item.children && item.children.length > 0) {
-                    nowText.value = nowText.value.concat(`-${item.name}`)
-                    content.value = item.children
-                    origin.value = origin.value.concat([item.children])
-                  } else {
-                    rightTextInner.value = item.name
-                  }
+                  props?.downLevel(item, index)
                 }}
               >
                 <ContextMenu
+                  addSubject={props?.addSubject}
+                  id={item?.id}
                   v-slots={{
                     default: () => (
                       <NCard
@@ -82,8 +105,8 @@ export default defineComponent({
                           cursor: 'pointer'
                         }}
                       >
-                        {item.children && item.children.length > 0 ? (
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          {item.children && item.children.length > 0 ? (
                             <svg
                               width="20px"
                               height="20px"
@@ -93,38 +116,40 @@ export default defineComponent({
                             >
                               <path d="M0.363 0.075H0.193l-0.021 -0.021L0.163 0.05h-0.125l-0.013 0.013v0.275l0.013 0.013h0.325l0.013 -0.013v-0.25zm-0.013 0.212V0.325h-0.3V0.175h0.112l0.009 -0.004 0.022 -0.022H0.35v0.038zm0 -0.162h-0.163l-0.009 0.004 -0.022 0.022H0.05v-0.075h0.107l0.021 0.021 0.009 0.004H0.35z" />
                             </svg>
+                          ) : null}
+
+                          {editIndex.value === index ? (
+                            <NInput
+                              style={{
+                                width: '260px'
+                              }}
+                              value={item.name}
+                              onInput={(v) => {
+                                // props?.treeList?.[index].name = v
+                                // props?.changeTree(v, index)
+                                content.value[index].name = v
+                              }}
+                              onBlur={() => {
+                                editIndex.value = -1
+                                props?.editNode({
+                                  name: item?.name,
+                                  id: item?.id
+                                })
+                              }}
+                            ></NInput>
+                          ) : (
                             <span
                               style={{
                                 marginLeft: '10px'
                               }}
+                              onClick={() => {
+                                editIndex.value = index
+                              }}
                             >
                               {item.name}
                             </span>
-                          </div>
-                        ) : editIndex.value === index ? (
-                          <NInput
-                            style={{
-                              width: '260px'
-                            }}
-                            value={item.name}
-                            onInput={(v) => {
-                              // props?.treeList?.[index].name = v
-                              props?.changeTree(v, index)
-                            }}
-                            onBlur={() => {
-                              editIndex.value = -1
-                              props?.addSubject(toRaw(props?.treeList))
-                            }}
-                          ></NInput>
-                        ) : (
-                          <div
-                            onClick={() => {
-                              editIndex.value = index
-                            }}
-                          >
-                            {item.name}
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </NCard>
                     )
                   }}

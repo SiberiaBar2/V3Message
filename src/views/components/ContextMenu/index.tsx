@@ -13,10 +13,23 @@ const MENULIST = [
   },
   {
     label: '删除'
-  }
+  },
+//   {
+//     label: '重命名'
+//   },
 ]
 export default defineComponent({
   name: 'ContextMenu',
+  props: {
+    addSubject: {
+      type: Function,
+      default: () => {}
+    },
+    id: {
+      type: String,
+      default: ''
+    }
+  },
   setup(props, ctx) {
     const dialog = useDialog()
     const containerRef = ref<HTMLDivElement | null>(null)
@@ -25,6 +38,8 @@ export default defineComponent({
     const editValue = ref('')
     const todoList: { [x: number]: Function } = {
       0: () => {
+        console.log('iiiiid', props?.id)
+
         dialog.warning({
           title: `新增子项`,
           content: () => (
@@ -37,6 +52,14 @@ export default defineComponent({
           positiveText: '确定',
           negativeText: '取消',
           onPositiveClick: () => {
+            props?.addSubject({
+              parentId: props?.id,
+              child: [
+                {
+                  name: editValue.value
+                }
+              ]
+            })
             editValue.value = ''
           }
         })
