@@ -13,10 +13,7 @@ const MENULIST = [
   },
   {
     label: '删除'
-  },
-//   {
-//     label: '重命名'
-//   },
+  }
 ]
 export default defineComponent({
   name: 'ContextMenu',
@@ -28,6 +25,18 @@ export default defineComponent({
     id: {
       type: String,
       default: ''
+    },
+    editNode: {
+      type: Function,
+      default: () => {}
+    },
+    deleteNode: {
+      type: Function,
+      default: () => {}
+    },
+    item: {
+      type: Object,
+      default: {}
     }
   },
   setup(props, ctx) {
@@ -65,6 +74,7 @@ export default defineComponent({
         })
       },
       1: () => {
+        editValue.value = props?.item?.name
         dialog.warning({
           title: `编辑`,
           content: () => (
@@ -77,6 +87,10 @@ export default defineComponent({
           positiveText: '确定',
           negativeText: '取消',
           onPositiveClick: () => {
+            props?.editNode({
+              name: editValue.value,
+              id: props.item?.id
+            })
             editValue.value = ''
           }
         })
@@ -87,7 +101,11 @@ export default defineComponent({
           content: '您确定要删除吗',
           positiveText: '确定',
           negativeText: '取消',
-          onPositiveClick: () => {}
+          onPositiveClick: () => {
+            props?.deleteNode({
+              id: props.item?.id
+            })
+          }
         })
       }
     }

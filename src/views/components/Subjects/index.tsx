@@ -1,4 +1,4 @@
-import { defineComponent, ref, toRaw, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import { NButton, NCard, NSpace, NInput } from 'naive-ui'
 
 import ContextMenu from '../ContextMenu'
@@ -11,6 +11,10 @@ export default defineComponent({
       default: () => {}
     },
     editNode: {
+      type: Function,
+      default: () => {}
+    },
+    deleteNode: {
       type: Function,
       default: () => {}
     },
@@ -95,8 +99,11 @@ export default defineComponent({
                 }}
               >
                 <ContextMenu
-                  addSubject={props?.addSubject}
+                  item={item}
                   id={item?.id}
+                  editNode={props?.editNode}
+                  deleteNode={props.deleteNode}
+                  addSubject={props?.addSubject}
                   v-slots={{
                     default: () => (
                       <NCard
@@ -124,18 +131,9 @@ export default defineComponent({
                               }}
                               value={item.name}
                               onInput={(v) => {
-                                // props?.treeList?.[index].name = v
-                                // props?.changeTree(v, index)
                                 content.value[index].name = v
                               }}
-                              onBlur={() => {
-                                editIndex.value = -1
-                                props?.editNode({
-                                  name: item?.name,
-                                  id: item?.id
-                                })
-                              }}
-                            ></NInput>
+                            />
                           ) : (
                             <span
                               style={{

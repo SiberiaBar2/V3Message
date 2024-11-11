@@ -3,8 +3,8 @@ import { NButton, useMessage, useDialog } from 'naive-ui'
 import { useQuery } from '@karlfranz/vuehooks'
 
 import { ContentContainer } from '@/components/ContentContainer'
-import { useTreeLevel } from '@/hooks'
 import Subjects from '../components/Subjects'
+import { useTreeLevel } from '@/hooks'
 import { client } from '@/http'
 
 import styles from './index.module.scss'
@@ -26,7 +26,7 @@ export default defineComponent({
     const { loading: clearLoading, run: clearTree } = useQuery(() => client('api/clear', 'POST'), {
       manual: true,
       success() {
-        message.success('清除成功！')
+        message.success('删除成功！')
         getTreeData()
       }
     })
@@ -71,6 +71,18 @@ export default defineComponent({
         }
       }
     )
+    const { run: deleteNode, loading: deleteLoading } = useQuery(
+      (params) => {
+        return client('api/deleteNode', 'POST', params)
+      },
+      {
+        manual: true,
+        success() {
+          message.success('删除成功！')
+          getTreeData()
+        }
+      }
+    )
 
     const rightTextInner = ref<string>('')
     const nowText = ref<string[]>(['->首页'])
@@ -106,8 +118,8 @@ export default defineComponent({
     const dialog = useDialog()
     const confirmClear = () => {
       dialog.warning({
-        title: '确定清除?',
-        content: '确定清除全部? 此操作不可恢复!',
+        title: '确定删除?',
+        content: '确定删除全部? 此操作不可恢复!',
         positiveText: '确定',
         negativeText: '取消',
         onPositiveClick: () => {
@@ -132,10 +144,10 @@ export default defineComponent({
               upLevel()
             }}
           >
-            返回上一级
+            {'<'}
           </NButton>
           <NButton type="error" onClick={confirmClear}>
-            清除全部
+            删除全部
           </NButton>
           {renderPosition()}
           {rightTextInner.value ? `-${rightTextInner.value}` : ''}
@@ -146,6 +158,7 @@ export default defineComponent({
             changeTree={changeTree}
             downLevel={downLevel}
             parentId={parentId}
+            deleteNode={deleteNode}
           />
         </div>
       </>
