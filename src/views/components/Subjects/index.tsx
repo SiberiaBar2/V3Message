@@ -38,9 +38,7 @@ export default defineComponent({
   setup(props, ctx) {
     const editIndex = ref(-1)
     const addItemName = ref('')
-
     const content = ref<any[]>(props?.treeList)
-    const origin = ref([props?.treeList])
 
     const removeEditIndex = () => (editIndex.value = -1)
     onMounted(() => {

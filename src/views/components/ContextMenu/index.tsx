@@ -14,7 +14,8 @@ const MENULIST = [
   {
     label: '删除'
   }
-]
+];
+
 export default defineComponent({
   name: 'ContextMenu',
   props: {
@@ -47,8 +48,6 @@ export default defineComponent({
     const editValue = ref('')
     const todoList: { [x: number]: Function } = {
       0: () => {
-        console.log('iiiiid', props?.id)
-
         dialog.warning({
           title: `新增子项`,
           content: () => (

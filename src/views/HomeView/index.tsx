@@ -1,5 +1,5 @@
 import { defineComponent, ref, reactive, toRaw } from 'vue'
-import { NButton, useMessage, useDialog } from 'naive-ui'
+import { NButton, useMessage, useDialog, NSpace } from 'naive-ui'
 import { useQuery } from '@karlfranz/vuehooks'
 
 import { ContentContainer } from '@/components/ContentContainer'
@@ -136,29 +136,40 @@ export default defineComponent({
     const renderHeader = () => (
       <>
         <div class={styles.leftContent}>
-          <NButton
-            quaternary
-            color="rgb(18, 107, 174)"
-            disabled={path.length === 0}
-            onClick={() => {
-              upLevel()
-            }}
-          >
-            {'<'}
-          </NButton>
-          <NButton type="error" onClick={confirmClear}>
-            删除全部
-          </NButton>
-          {renderPosition()}
+          <NSpace>
+            <NButton
+              quaternary
+              color="rgb(18, 107, 174)"
+              disabled={path.length === 0}
+              onClick={() => {
+                upLevel()
+              }}
+            >
+              {'<'}
+            </NButton>
+            <NButton type="error" onClick={confirmClear}>
+              删除全部
+            </NButton>
+            <NButton
+              type="info"
+              onClick={() => {
+                alert('开发中')
+              }}
+            >
+              批量导入
+            </NButton>
+            {renderPosition()}
+          </NSpace>
+
           {rightTextInner.value ? `-${rightTextInner.value}` : ''}
           <Subjects
-            editNode={editNode}
-            addSubject={addSubject}
             treeList={copyList}
-            changeTree={changeTree}
-            downLevel={downLevel}
             parentId={parentId}
+            editNode={editNode}
+            downLevel={downLevel}
+            addSubject={addSubject}
             deleteNode={deleteNode}
+            changeTree={changeTree}
           />
         </div>
       </>
