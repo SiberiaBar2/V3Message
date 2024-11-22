@@ -1,5 +1,5 @@
-import { defineComponent, ref, reactive, toRaw } from 'vue'
-import { NButton, useMessage, useDialog, NSpace } from 'naive-ui'
+import { defineComponent, ref, reactive } from 'vue'
+import { NButton, useMessage, useDialog, NSpace, NInput } from 'naive-ui'
 import { useQuery } from '@karlfranz/vuehooks'
 
 import { ContentContainer } from '@/components/ContentContainer'
@@ -12,15 +12,15 @@ import styles from './index.module.scss'
 export default defineComponent({
   setup() {
     const message = useMessage()
-    const { path, copyList, upLevel, downLevel, insideData, parentId } = useTreeLevel()
+    const { path, copyList, upLevel, downLevel, insideData, parentId, setShowList } = useTreeLevel()
 
     const treeList = reactive<any[]>([])
     const { loading, run: getTreeData } = useQuery(() => client('api/tree'), {
       success(res) {
-        console.log('res===>', res)
         treeList.length = 0
         treeList.push(...res?.treeData)
         insideData(res?.treeData)
+        setShowList()
       }
     })
     const { loading: clearLoading, run: clearTree } = useQuery(() => client('api/clear', 'POST'), {
@@ -33,23 +33,7 @@ export default defineComponent({
 
     const { run: addSubject, loading: addEditLoading } = useQuery(
       (params) => {
-        console.log('params', params)
-
-        return client(
-          'api/addChild',
-          'POST',
-          // ...treeList,
-          // {
-          // name: addItemName.value,
-          // children: []
-          params
-          // {
-          //   child: params,
-          //   parendId:
-          // }
-          // }
-          // [addItem]
-        )
+        return client('api/addChild', 'POST', params)
       },
       {
         manual: true,
@@ -86,6 +70,7 @@ export default defineComponent({
 
     const rightTextInner = ref<string>('')
     const nowText = ref<string[]>(['->首页'])
+    const deleteList = reactive<number[]>([])
 
     const renderPosition = () =>
       nowText.value ? (
@@ -113,8 +98,6 @@ export default defineComponent({
         ''
       )
 
-    // const addItemName = ref('')
-
     const dialog = useDialog()
     const confirmClear = () => {
       dialog.warning({
@@ -128,11 +111,10 @@ export default defineComponent({
       })
     }
 
-    console.log('copyList', copyList)
-
     const changeTree = (v: string, index: number) => {
       treeList[index].name = v
     }
+    const addItemName = ref('')
     const renderHeader = () => (
       <>
         <div class={styles.leftContent}>
@@ -153,14 +135,67 @@ export default defineComponent({
             <NButton
               type="info"
               onClick={() => {
-                alert('开发中')
+                dialog.warning({
+                  title: `批量新增`,
+                  content: () => (
+                    <>
+                      <div>多个以逗号 “ , ” 分隔</div>
+                      <NInput
+                        value={addItemName.value}
+                        onInput={(v) => (addItemName.value = v)}
+                        placeholder={'请输入'}
+                        type="textarea"
+                      />
+                    </>
+                  ),
+                  positiveText: '确定',
+                  negativeText: '取消',
+                  onPositiveClick: () => {
+                    const addItems = addItemName.value?.split('，').map((ele) => {
+                      return {
+                        name: ele,
+                        children: []
+                      }
+                    })
+                    addSubject({
+                      parentId: parentId.value,
+                      child: addItems
+                    })
+                    addItemName.value = ''
+                  }
+                })
               }}
             >
-              批量导入
+              批量新增
+            </NButton>
+            <NButton
+              type="error"
+              onClick={() => {
+                if (deleteList.length === 0) {
+                  return
+                }
+                dialog.warning({
+                  title: `确认删除？`,
+                  content: '您确定要删除吗',
+                  positiveText: '确定',
+                  negativeText: '取消',
+                  onPositiveClick: () => {
+                    deleteNode({
+                      ids: deleteList
+                    })
+                  }
+                })
+              }}
+            >
+              批量删除
             </NButton>
             {renderPosition()}
           </NSpace>
-
+          <div
+            style={{
+              margin: '10px 0'
+            }}
+          />
           {rightTextInner.value ? `-${rightTextInner.value}` : ''}
           <Subjects
             treeList={copyList}
@@ -170,6 +205,7 @@ export default defineComponent({
             addSubject={addSubject}
             deleteNode={deleteNode}
             changeTree={changeTree}
+            deleteList={deleteList}
           />
         </div>
       </>
